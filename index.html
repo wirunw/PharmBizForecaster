@@ -641,6 +641,10 @@
                 });
                 return acc;
             }, {});
+            
+            // Calculate proper annual free cash flow for consistency with CSV export
+            annualData.freeCashFlow = annualData.netIncome + annualData.depreciation;
+            
             annualStatements.push({ year, ...annualData });
         }
         return annualStatements;
