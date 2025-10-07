@@ -209,7 +209,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-gray-800">ข้อจำกัด (Limitation)</h3>
-                        <p class="text-sm text-gray-600">โมเดลนี้ยังไม่รวมการคำนวณเงินกู้, ดอกเบี้ย และภาษีเงินได้บุคคลธรรมดา</p>
+                        <p class="text-sm text-gray-600">เป็นการคาดการณ์เบื้องต้นเท่านั้น โมเดลนี้ยังไม่รวมการคำนวณเงินกู้, ดอกเบี้ย และภาษีเงินได้บุคคลธรรมดา</p>
                     </div>
                 </div>
             </div>
@@ -516,7 +516,8 @@
             </section>
         </main>
 
-        <footer class="text-center mt-12 text-gray-500 text-sm">
+        <footer class="text-center mt-12 text-gray-500 text-sm flex flex-col items-center">
+            <img src="https://i.postimg.cc/yY1rPJ07/wirun-facbook.png" alt="Logo" class="w-16 h-16 rounded-full mb-2 border-2 border-white shadow-lg">
             <p>ออกแบบโดย เภสัชกรวิรุณ เวชศิริ</p>
             <a href="http://www.pharmconnection.net" target="_blank" class="hover:text-teal-600">www.pharmconnection.net</a>
         </footer>
@@ -528,7 +529,7 @@
 
     // --- UTILITY FUNCTIONS ---
     const $ = (selector) => document.querySelector(selector);
-    const $$ = (selector) => document.querySelectorAll(selector);
+    const $ = (selector) => document.querySelectorAll(selector);
 
     const formatCurrency = (value) => {
         if (typeof value !== 'number' || isNaN(value)) return 'N/A';
@@ -552,15 +553,15 @@
         updateTotalSalary();
         const locationType = $('input[name="locationType"]:checked').value;
         
-        const depreciableAssetsOther = Array.from($$('.depreciable-asset-other')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        const depreciableAssetsOther = Array.from($('.depreciable-asset-other')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
         let buildingValue = 0;
         if (locationType === 'own') {
             buildingValue = parseFloat(cleanValue('investmentBuilding')) || 0;
         }
 
-        const totalInvestment = Array.from($$('.detail-investment')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
-        const totalFixedOpex = Array.from($$('.detail-fixed-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
-        const totalVariableOpexRate = Array.from($$('.detail-variable-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        const totalInvestment = Array.from($('.detail-investment')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        const totalFixedOpex = Array.from($('.detail-fixed-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        const totalVariableOpexRate = Array.from($('.detail-variable-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
 
         return {
             projectionYears: parseInt(cleanValue('projectionYears')) || 5,
@@ -722,7 +723,7 @@
 
     function calculateTotalFeesMonthly() {
         let totalMonthlyFee = 0;
-        $$('.detail-fee').forEach(el => {
+        $('.detail-fee').forEach(el => {
             const value = parseFloat(cleanValue(el.id)) || 0;
             const months = parseInt(el.dataset.months) || 1;
             totalMonthlyFee += value / months;
@@ -733,13 +734,13 @@
     function updateTotalDisplays() {
         updateTotalSalary();
         calculateTotalFeesMonthly();
-        const totalInvestment = Array.from($$('.detail-investment')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        const totalInvestment = Array.from($('.detail-investment')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
         $('#totalInvestmentDisplay').value = totalInvestment.toLocaleString('en-US');
 
-        const totalFixedOpex = Array.from($$('.detail-fixed-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        const totalFixedOpex = Array.from($('.detail-fixed-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
         $('#totalFixedOpexDisplay').value = totalFixedOpex.toLocaleString('en-US');
 
-        const totalVariableOpexRate = Array.from($$('.detail-variable-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        const totalVariableOpexRate = Array.from($('.detail-variable-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
         $('#totalVariableOpexRateDisplay').value = totalVariableOpexRate.toFixed(1);
     }
 
@@ -1014,8 +1015,8 @@
     }
 
     function switchTab(tabName) {
-        $$('.tab-content').forEach(el => el.classList.add('hidden'));
-        $$('.tab-button').forEach(el => el.classList.remove('active'));
+        $('.tab-content').forEach(el => el.classList.add('hidden'));
+        $('.tab-button').forEach(el => el.classList.remove('active'));
         $(`#tab-content-${tabName}`).classList.remove('hidden');
         $(`button[data-tab="${tabName}"]`).classList.add('active');
         
@@ -1047,10 +1048,10 @@
     }
 
     // Event Listeners
-    $$('.input[name="locationType"]').forEach(radio => radio.addEventListener('change', toggleLocationFields));
+    $('.input[name="locationType"]').forEach(radio => radio.addEventListener('change', toggleLocationFields));
 
     $('#tabs').addEventListener('click', (e) => { if(e.target.matches('.tab-button')) switchTab(e.target.dataset.tab); });
-    $$('.form-input').forEach(input => {
+    $('.form-input').forEach(input => {
         input.addEventListener('input', main); 
         input.addEventListener('change', (e) => { 
             // When the user manually changes the customer count, it becomes the new base
