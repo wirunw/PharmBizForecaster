@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmBiz Forecaster | โปรแกรมวิเคราะห์การเงินร้านยา</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f7fafc;
+        }
+        .form-input {
+            width: 100%;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            color: #4a5568;
+            background-color: #fff;
+            border-width: 1px;
+            border-color: #e2e8f0;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 200ms;
+        }
+        .form-input:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+            --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+            box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+            --tw-ring-color: #0d9488;
+            border-color: transparent;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+        .card {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+        .btn {
+            color: #fff;
+            font-weight: 700;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            border-radius: 0.5rem;
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 200ms;
+            transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+        }
+        .btn:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 #0000, 0 0 #0000, 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+        .btn-primary {
+            background-color: #0d9488;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .btn-primary:hover {
+            background-color: #0f766e;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+        .btn-secondary {
+            background-color: #047857;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .btn-secondary:hover {
+            background-color: #065f46;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-secondary:active {
+            transform: scale(0.95);
+        }
+        .btn-tertiary {
+            background-color: #6b7280;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .btn-tertiary:hover {
+            background-color: #4b5563;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-tertiary:active {
+            transform: scale(0.95);
+        }
+        .tab-button {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            border-top-width: 1px;
+            border-left-width: 1px;
+            border-right-width: 1px;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+        .tab-button:not(.active) {
+            background-color: #e2e8f0;
+            border-color: #cbd5e0;
+        }
+        .tab-button:not(.active):hover {
+            background-color: #cbd5e0;
+        }
+        .tab-button.active {
+            background-color: #fff;
+            color: #0d9488;
+            border-color: #cbd5e0;
+            border-bottom-color: #fff;
+            margin-bottom: -1px;
+        }
+        .tab-button[data-tab="statements"].active {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border-color: #b2f5ea;
+            border-bottom-color: #fff;
+        }
+        .tab-button[data-tab="comparison"].active {
+            background-color: #f0f9ff;
+            color: #0369a1;
+            border-color: #bae6fd;
+            border-bottom-color: #fff;
+        }
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        details[open] .arrow {
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-8 flex flex-col items-center">
+            <img src="https://i.postimg.cc/yY1rPJ07/wirun-facbook.png" alt="Logo" class="w-24 h-24 rounded-full mb-4 border-4 border-white shadow-lg">
+            <h1 class="text-3xl md:text-4xl font-bold text-teal-800">PharmBiz Forecaster</h1>
+            <p class="text-lg text-gray-600 mt-1">เครื่องมือวิเคราะห์และพยากรณ์ทางการเงินสำหรับธุรกิจร้านยา</p>
+        </header>
+
+        <!-- Infographic Section -->
+        <section class="mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Step 1 -->
+                <div class="bg-white p-5 rounded-xl shadow-md flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <svg class="w-10 h-10 text-teal-600" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800">กรอกข้อมูล (Input)</h3>
+                        <p class="text-sm text-gray-600">ใส่ตัวแปรและสมมติฐานต่างๆ ทางด้านซ้ายให้ครบถ้วน</p>
+                    </div>
+                </div>
+                <!-- Step 2 -->
+                <div class="bg-white p-5 rounded-xl shadow-md flex items-start space-x-4">
+                     <div class="flex-shrink-0">
+                        <svg class="w-10 h-10 text-teal-600" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800">วิเคราะห์ผล (Analyze)</h3>
+                        <p class="text-sm text-gray-600">ดูผลลัพธ์หลัก, งบการเงิน, และกราฟทางด้านขวาได้ทันที</p>
+                    </div>
+                </div>
+                <!-- Step 3 -->
+                <div class="bg-white p-5 rounded-xl shadow-md flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                       <svg class="w-10 h-10 text-teal-600" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800">เปรียบเทียบ (Compare)</h3>
+                        <p class="text-sm text-gray-600">ไปที่แท็บ "เปรียบเทียบ" เพื่อดูผลลัพธ์ 3 สถานการณ์ (Base/Best/Worst)</p>
+                    </div>
+                </div>
+                 <!-- Step 4 -->
+                <div class="bg-white p-5 rounded-xl shadow-md flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <svg class="w-10 h-10 text-orange-500" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800">ข้อจำกัด (Limitation)</h3>
+                        <p class="text-sm text-gray-600">โมเดลนี้ยังไม่รวมการคำนวณเงินกู้, ดอกเบี้ย และภาษีเงินได้บุคคลธรรมดา</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <main class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Left Side: Input & Configuration -->
+            <aside class="lg:col-span-2 space-y-6">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4 text-gray-700 border-b pb-2">Module 1: Input & Configuration</h2>
+                    
+                    <div>
+                        <label for="projectionYears" class="form-label">จำนวนปีที่พยากรณ์</label>
+                        <input type="number" id="projectionYears" class="form-input" value="5" min="1">
+                    </div>
+
+                    <!-- Location Type -->
+                    <div class="mt-4">
+                        <h3 class="text-lg font-semibold text-teal-700 mb-2">ประเภทสถานที่</h3>
+                        <div class="flex space-x-4 rounded-lg bg-gray-100 p-1">
+                            <label class="flex-1 text-center">
+                                <input type="radio" name="locationType" id="locationTypeRent" value="rent" class="hidden peer" checked>
+                                <div class="cursor-pointer rounded-md py-2 px-4 peer-checked:bg-teal-600 peer-checked:text-white peer-checked:shadow-md">เช่าสถานที่</div>
+                            </label>
+                            <label class="flex-1 text-center">
+                                <input type="radio" name="locationType" id="locationTypeOwn" value="own" class="hidden peer">
+                                <div class="cursor-pointer rounded-md py-2 px-4 peer-checked:bg-teal-600 peer-checked:text-white peer-checked:shadow-md">เป็นเจ้าของสถานที่</div>
+                            </label>
+                        </div>
+                    </div>
+
+
+                    <!-- Initial Investment -->
+                    <div class="mt-4">
+                         <details class="group" open>
+                            <summary class="cursor-pointer font-semibold list-none">
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                    <div class="flex items-center">
+                                        <span class="arrow transition-transform duration-200">▶</span>
+                                        <span class="ml-2 text-lg text-teal-700">เงินลงทุนเริ่มต้น (Initial Investment)</span>
+                                    </div>
+                                    <input type="text" id="totalInvestmentDisplay" class="form-input text-right w-40 bg-gray-200 pointer-events-none" readonly>
+                                </div>
+                            </summary>
+                            <div class="pl-4 pt-2 mt-2 space-y-2 border-l-2 border-gray-200 ml-2">
+                                <div id="buildingInvestmentField" class="hidden">
+                                     <h4 class="font-semibold text-gray-600 text-sm">อาคาร (Depreciable Asset)</h4>
+                                     <div class="pl-2 space-y-2 mt-1">
+                                         <div>
+                                            <label for="investmentBuilding" class="form-label text-xs">มูลค่าอาคาร</label>
+                                            <input type="text" id="investmentBuilding" class="form-input detail-investment" value="3000000">
+                                        </div>
+                                         <div>
+                                            <label for="buildingDepreciationYears" class="form-label text-xs">ระยะเวลาเสื่อมราคาอาคาร (ปี)</label>
+                                            <input type="number" id="buildingDepreciationYears" class="form-input" value="20" min="1">
+                                        </div>
+                                     </div>
+                                </div>
+
+                                <h4 class="font-semibold text-gray-600 text-sm">สินทรัพย์และอุปกรณ์ (Depreciable Assets)</h4>
+                                <div class="pl-2 space-y-2 mt-1">
+                                    <div>
+                                        <label for="investmentRenovation" class="form-label text-xs">ค่าอุปกรณ์และตกแต่ง</label>
+                                        <input type="text" id="investmentRenovation" class="form-input detail-investment depreciable-asset-other" value="300000">
+                                    </div>
+                                    <div>
+                                        <label for="investmentPOS" class="form-label text-xs">ค่าระบบ POS และคอมพิวเตอร์</label>
+                                        <input type="text" id="investmentPOS" class="form-input detail-investment depreciable-asset-other" value="50000">
+                                    </div>
+                                    <div>
+                                        <label for="investmentSecurity" class="form-label text-xs">ค่าระบบรักษาความปลอดภัย (CCTV)</label>
+                                        <input type="text" id="investmentSecurity" class="form-input detail-investment depreciable-asset-other" value="15000">
+                                    </div>
+                                </div>
+                                
+                                <h4 class="font-semibold text-gray-600 text-sm mt-4 pt-2 border-t">ค่าใช้จ่ายเริ่มต้น (Non-Depreciable)</h4>
+                                 <div class="pl-2 space-y-2 mt-1">
+                                    <div>
+                                        <label for="investmentInitialInventory" class="form-label text-xs">เงินลงทุนในสินค้าคงคลังเริ่มต้น</label>
+                                        <input type="text" id="investmentInitialInventory" class="form-input detail-investment" value="300000">
+                                    </div>
+                                    <div>
+                                        <label for="investmentFees" class="form-label text-xs">ค่าธรรมเนียมและใบอนุญาตก่อนเปิดร้าน</label>
+                                        <input type="text" id="investmentFees" class="form-input detail-investment" value="25000">
+                                    </div>
+                                     <div id="rentalDepositField">
+                                        <label for="investmentRentalDeposit" class="form-label text-xs">เงินมัดจำค่าเช่า</label>
+                                        <input type="text" id="investmentRentalDeposit" class="form-input detail-investment" value="30000">
+                                    </div>
+                                     <div>
+                                        <label for="investmentWorkingCapital" class="form-label text-xs">เงินทุนหมุนเวียนสำรอง (3-6 เดือน)</label>
+                                        <input type="text" id="investmentWorkingCapital" class="form-input detail-investment" value="200000">
+                                    </div>
+                                     <div>
+                                        <label for="investmentPrelaunchMarketing" class="form-label text-xs">ค่าการตลาดก่อนเปิดร้าน</label>
+                                        <input type="text" id="investmentPrelaunchMarketing" class="form-input detail-investment" value="20000">
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Revenue Drivers -->
+                    <div class="mt-4">
+                        <h3 class="text-lg font-semibold text-teal-700 mb-2">ตัวแปรด้านรายได้ (Revenue Drivers)</h3>
+                        <div class="space-y-2">
+                             <div>
+                                <label for="dailyCustomers" class="form-label">จำนวนลูกค้าต่อวัน (คน)</label>
+                                <input type="text" id="dailyCustomers" class="form-input" value="100">
+                            </div>
+                            <div>
+                                <label for="basketSize" class="form-label">ยอดซื้อเฉลี่ยต่อคน (บาท)</label>
+                                <input type="text" id="basketSize" class="form-input" value="140">
+                            </div>
+                             <div>
+                                <label for="operatingDays" class="form-label">จำนวนวันทำการต่อเดือน</label>
+                                <input type="number" id="operatingDays" class="form-input" value="26" max="31" min="1">
+                            </div>
+                            <div>
+                                <label for="annualGrowthRate" class="form-label">อัตราการเติบโตต่อปี (%)</label>
+                                <input type="number" id="annualGrowthRate" class="form-input" value="5">
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- Cost Drivers -->
+                    <div class="mt-4">
+                        <h3 class="text-lg font-semibold text-teal-700 mb-2">ตัวแปรด้านต้นทุน (Cost Drivers)</h3>
+                        <div class="space-y-2">
+                            <div>
+                                <label for="cogsRate" class="form-label">ต้นทุนขาย (COGS) (% ของยอดขาย)</label>
+                                <input type="number" id="cogsRate" class="form-input" value="70">
+                            </div>
+                            
+                            <!-- Detailed Fixed Opex -->
+                            <details class="group" open>
+                                <summary class="cursor-pointer font-semibold list-none">
+                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                        <div class="flex items-center">
+                                            <span class="arrow transition-transform duration-200">▶</span>
+                                            <span class="ml-2">ค่าใช้จ่ายคงที่ (Fixed Opex)</span>
+                                        </div>
+                                        <input type="text" id="totalFixedOpexDisplay" class="form-input text-right w-36 bg-gray-200 pointer-events-none" readonly>
+                                    </div>
+                                </summary>
+                                <div class="pl-4 pt-2 mt-2 space-y-2 border-l-2 border-gray-200 ml-2">
+                                    <h4 class="font-semibold text-gray-600 text-sm">ค่าบุคลากร (ต่อเดือน)</h4>
+                                    <div class="pl-2 space-y-2 mt-1">
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label for="pharmacistCount" class="form-label text-xs">จำนวนเภสัชกร</label>
+                                                <input type="number" id="pharmacistCount" class="form-input detail-salary-component" value="1" min="0">
+                                            </div>
+                                            <div>
+                                                <label for="assistantCount" class="form-label text-xs">จำนวนผู้ช่วย</label>
+                                                <input type="number" id="assistantCount" class="form-input detail-salary-component" value="0" min="0">
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label for="pharmacistSalary" class="form-label text-xs">เงินเดือนเภสัชกร/คน</label>
+                                                <input type="text" id="pharmacistSalary" class="form-input detail-salary-component" value="45000">
+                                            </div>
+                                            <div>
+                                                <label for="assistantSalary" class="form-label text-xs">เงินเดือนผู้ช่วย/คน</label>
+                                                <input type="text" id="assistantSalary" class="form-input detail-salary-component" value="15000">
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="totalSalary" class="detail-fixed-opex" value="60000">
+                                    </div>
+                                    
+                                    <h4 class="font-semibold text-gray-600 text-sm mt-4 pt-2 border-t">ค่าดำเนินงาน (ต่อเดือน)</h4>
+                                    <div class="pl-2 space-y-2 mt-1">
+                                        <div id="rentField">
+                                            <label for="opexRent" class="form-label text-xs">ค่าเช่าร้าน</label>
+                                            <input type="text" id="opexRent" class="form-input detail-fixed-opex" value="10000">
+                                        </div>
+                                        <div>
+                                            <label for="opexOvertime" class="form-label text-xs">ค่าล่วงเวลา (OT)</label>
+                                            <input type="text" id="opexOvertime" class="form-input detail-fixed-opex" value="0">
+                                        </div>
+                                        <div>
+                                            <label for="opexUtilities" class="form-label text-xs">ค่าสาธารณูปโภค</label>
+                                            <input type="text" id="opexUtilities" class="form-input detail-fixed-opex" value="6000">
+                                        </div>
+                                    </div>
+
+                                     <h4 class="font-semibold text-gray-600 text-sm mt-4 pt-2 border-t">ค่าธรรมเนียมและภาษี</h4>
+                                     <div class="pl-2 space-y-2 mt-1">
+                                        <div>
+                                            <label for="feeAccountingMonthly" class="form-label text-xs">ค่าทำบัญชี (บาท/เดือน)</label>
+                                            <input type="text" id="feeAccountingMonthly" class="form-input detail-fee" data-months="1" value="2000">
+                                        </div>
+                                        <div>
+                                            <label for="feeAuditYearly" class="form-label text-xs">ค่าตรวจสอบบัญชี (บาท/ปี)</label>
+                                            <input type="text" id="feeAuditYearly" class="form-input detail-fee" data-months="12" value="10000">
+                                        </div>
+                                        <div>
+                                            <label for="feeLicenseDrugYearly" class="form-label text-xs">ใบอนุญาตขายยา (บาท/ปี)</label>
+                                            <input type="text" id="feeLicenseDrugYearly" class="form-input detail-fee" data-months="12" value="2000">
+                                        </div>
+                                        <div>
+                                            <label for="feeLicenseNarcoticYearly" class="form-label text-xs">ใบอนุญาตวัตถุออกฤทธิ์ (บาท/ปี)</label>
+                                            <input type="text" id="feeLicenseNarcoticYearly" class="form-input detail-fee" data-months="12" value="2000">
+                                        </div>
+                                        <div>
+                                            <label for="feeGPPBiYearly" class="form-label text-xs">ค่าตรวจ GPP (บาท/2 ปี)</label>
+                                            <input type="text" id="feeGPPBiYearly" class="form-input detail-fee" data-months="24" value="3000">
+                                        </div>
+                                        <div>
+                                            <label for="feeSignTaxYearly" class="form-label text-xs">ภาษีป้าย/โรงเรือน (บาท/ปี)</label>
+                                            <input type="text" id="feeSignTaxYearly" class="form-input detail-fee" data-months="12" value="2000">
+                                        </div>
+                                        <input type="hidden" id="totalFeesMonthly" class="detail-fixed-opex">
+                                     </div>
+
+                                    <h4 class="font-semibold text-gray-600 text-sm mt-4 pt-2 border-t">ค่าการตลาด (ต่อเดือน)</h4>
+                                    <div class="pl-2 space-y-2 mt-1">
+                                        <div>
+                                            <label for="opexMarketingOnline" class="form-label text-xs">การตลาดออนไลน์ (Ads)</label>
+                                            <input type="text" id="opexMarketingOnline" class="form-input detail-fixed-opex" value="5000">
+                                        </div>
+                                        <div>
+                                            <label for="opexMarketingOffline" class="form-label text-xs">การตลาดออฟไลน์ (ป้าย, ใบปลิว)</label>
+                                            <input type="text" id="opexMarketingOffline" class="form-input detail-fixed-opex" value="5000">
+                                        </div>
+                                        <div>
+                                            <label for="opexMarketingPromo" class="form-label text-xs">โปรโมชั่นและส่วนลด</label>
+                                            <input type="text" id="opexMarketingPromo" class="form-input detail-fixed-opex" value="10000">
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <!-- Detailed Variable Opex -->
+                             <details class="group" open>
+                                <summary class="cursor-pointer font-semibold list-none">
+                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                        <div class="flex items-center">
+                                             <span class="arrow transition-transform duration-200">▶</span>
+                                             <span class="ml-2">ค่าใช้จ่ายผันแปร (Variable Opex)</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="text" id="totalVariableOpexRateDisplay" class="form-input text-right w-24 bg-gray-200 pointer-events-none" readonly>
+                                            <span class="ml-2 text-gray-600">% ของยอดขาย</span>
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div class="pl-4 pt-2 mt-2 space-y-2 border-l-2 border-gray-200 ml-2">
+                                    <div>
+                                        <label for="opexSuppliesRate" class="form-label text-sm">ค่าวัสดุสิ้นเปลือง (ถุง/ฉลาก) (% ของยอดขาย)</label>
+                                        <input type="number" step="0.1" id="opexSuppliesRate" class="form-input detail-variable-opex" value="0.5">
+                                    </div>
+                                     <div>
+                                        <label for="opexDevRate" class="form-label text-sm">ค่าพัฒนาตนเอง/เบ็ดเตล็ด (% ของยอดขาย)</label>
+                                        <input type="number" step="0.1" id="opexDevRate" class="form-input detail-variable-opex" value="2.3">
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+
+                    <!-- Financial Parameters -->
+                    <div class="mt-4">
+                         <h3 class="text-lg font-semibold text-teal-700 mb-2">พารามิเตอร์ทางการเงิน (Financials)</h3>
+                         <div class="space-y-2">
+                            <div>
+                                <label for="taxRate" class="form-label">อัตราภาษี (%)</label>
+                                <input type="number" id="taxRate" class="form-input" value="20">
+                            </div>
+                            <div>
+                                <label for="discountRate" class="form-label">อัตราคิดลด (Discount Rate) (%)</label>
+                                <input type="number" id="discountRate" class="form-input" value="8">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right Side: Results -->
+            <section class="lg:col-span-3">
+                <div class="bg-white rounded-xl shadow-lg">
+                    <div class="border-b border-gray-300">
+                        <nav id="tabs" class="flex px-6 space-x-2">
+                            <button data-tab="metrics" class="tab-button active">ผลลัพธ์หลัก (Key Metrics)</button>
+                            <button data-tab="statements" class="tab-button">งบการเงิน (Financials)</button>
+                            <button data-tab="comparison" class="tab-button">เปรียบเทียบ (Scenarios)</button>
+                        </nav>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div class="p-6">
+                        <div id="tab-content-metrics" class="tab-content">
+                            <!-- Populated by JS -->
+                        </div>
+                        <div id="tab-content-statements" class="tab-content hidden">
+                           <!-- Populated by JS -->
+                        </div>
+                        <div id="tab-content-comparison" class="tab-content hidden">
+                           <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>ออกแบบโดย เภสัชกรวิรุณ เวชศิริ</p>
+            <a href="http://www.pharmconnection.net" target="_blank" class="hover:text-teal-600">www.pharmconnection.net</a>
+        </footer>
+    </div>
+
+<script>
+    // --- Global State ---
+    window.currentAnnualStatements = [];
+
+    // --- UTILITY FUNCTIONS ---
+    const $ = (selector) => document.querySelector(selector);
+    const $ = (selector) => document.querySelectorAll(selector);
+
+    const formatCurrency = (value) => {
+        if (typeof value !== 'number' || isNaN(value)) return 'N/A';
+        return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', minimumFractionDigits: 0 }).format(value);
+    };
+
+    const formatNumber = (value) => {
+        if (typeof value !== 'number' || isNaN(value)) return 'N/A';
+        return new Intl.NumberFormat('th-TH', { maximumFractionDigits: 2 }).format(value);
+    };
+
+    const cleanValue = (id) => {
+        const el = $(`#${id}`);
+        if (!el || typeof el.value !== 'string') return 0;
+        return el.value.replace(/,/g, '');
+    };
+
+    // --- MODULE 1: GATHER INPUTS ---
+    function getAssumptions(customerOverride = null) {
+        calculateTotalFeesMonthly();
+        updateTotalSalary();
+        const locationType = $('input[name="locationType"]:checked').value;
+        
+        const depreciableAssetsOther = Array.from($('.depreciable-asset-other')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        let buildingValue = 0;
+        if (locationType === 'own') {
+            buildingValue = parseFloat(cleanValue('investmentBuilding')) || 0;
+        }
+
+        const totalInvestment = Array.from($('.detail-investment')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        const totalFixedOpex = Array.from($('.detail-fixed-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        const totalVariableOpexRate = Array.from($('.detail-variable-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+
+        return {
+            projectionYears: parseInt(cleanValue('projectionYears')) || 5,
+            locationType: locationType,
+            initialInvestment: {
+                total: totalInvestment,
+                depreciableAssetsOther: depreciableAssetsOther,
+                buildingValue: buildingValue,
+                buildingDepreciationYears: parseInt(cleanValue('buildingDepreciationYears')) || 20,
+            },
+            revenueDrivers: {
+                dailyCustomers: customerOverride !== null ? customerOverride : (parseFloat(cleanValue('dailyCustomers')) || 0),
+                basketSize: parseFloat(cleanValue('basketSize')) || 0,
+                operatingDays: parseInt(cleanValue('operatingDays')) || 30,
+                annualGrowthRate: parseFloat(cleanValue('annualGrowthRate')) / 100 || 0,
+            },
+            costDrivers: {
+                cogsRate: parseFloat(cleanValue('cogsRate')) / 100 || 0,
+                fixedOpex: totalFixedOpex,
+                variableOpexRate: totalVariableOpexRate / 100,
+            },
+            financialParams: {
+                taxRate: parseFloat(cleanValue('taxRate')) / 100 || 0,
+                discountRate: parseFloat(cleanValue('discountRate')) / 100 || 0,
+            }
+        };
+    }
+
+    // --- MODULE 2: PROJECTION ENGINE ---
+    function runProjection(assumptions) {
+        const totalMonths = assumptions.projectionYears * 12;
+        let monthlyProjections = [];
+        let currentDailyCustomers = assumptions.revenueDrivers.dailyCustomers;
+
+        const monthlyDepreciationOther = assumptions.initialInvestment.depreciableAssetsOther > 0 ? assumptions.initialInvestment.depreciableAssetsOther / (assumptions.projectionYears * 12) : 0;
+        const monthlyDepreciationBuilding = assumptions.initialInvestment.buildingValue > 0 ? assumptions.initialInvestment.buildingValue / (assumptions.initialInvestment.buildingDepreciationYears * 12) : 0;
+        const totalMonthlyDepreciation = monthlyDepreciationOther + monthlyDepreciationBuilding;
+
+        for (let month = 1; month <= totalMonths; month++) {
+            if (month > 1 && (month - 1) % 12 === 0) {
+                currentDailyCustomers *= (1 + assumptions.revenueDrivers.annualGrowthRate);
+            }
+            
+            const monthlyRevenue = currentDailyCustomers * assumptions.revenueDrivers.basketSize * assumptions.revenueDrivers.operatingDays;
+            const monthlyCogs = monthlyRevenue * assumptions.costDrivers.cogsRate;
+            const grossProfit = monthlyRevenue - monthlyCogs;
+            
+            const variableOpex = monthlyRevenue * assumptions.costDrivers.variableOpexRate;
+            const totalOpex = assumptions.costDrivers.fixedOpex + variableOpex;
+            
+            const ebitda = grossProfit - totalOpex;
+            const depreciation = totalMonthlyDepreciation;
+            const ebit = ebitda - depreciation;
+            
+            const tax = (ebit > 0) ? ebit * assumptions.financialParams.taxRate : 0;
+            const netIncome = ebit - tax;
+
+            const freeCashFlow = ebit * (1 - assumptions.financialParams.taxRate) + depreciation;
+
+            monthlyProjections.push({
+                month, revenue: monthlyRevenue, cogs: monthlyCogs, grossProfit,
+                fixedOpex: assumptions.costDrivers.fixedOpex, variableOpex, totalOpex,
+                ebitda, depreciation, ebit, tax, netIncome, freeCashFlow,
+            });
+        }
+        return monthlyProjections;
+    }
+
+    // --- MODULE 3: FINANCIAL STATEMENT GENERATOR ---
+    function generateStatements(monthlyProjections, years) {
+        let annualStatements = [];
+        for (let year = 1; year <= years; year++) {
+            const yearMonths = monthlyProjections.slice((year - 1) * 12, year * 12);
+            const annualData = yearMonths.reduce((acc, monthData) => {
+                Object.keys(monthData).forEach(key => {
+                    if (key !== 'month') acc[key] = (acc[key] || 0) + monthData[key];
+                });
+                return acc;
+            }, {});
+            annualStatements.push({ year, ...annualData });
+        }
+        return annualStatements;
+    }
+
+    // --- MODULE 4: INVESTMENT ANALYSIS ---
+    function calculateMetrics(annualStatements, assumptions) {
+        const totalInvestment = assumptions.initialInvestment.total;
+        const cashFlows = [-totalInvestment, ...annualStatements.map(s => s.freeCashFlow)];
+
+        let npv = cashFlows.reduce((acc, val, t) => acc + val / Math.pow(1 + assumptions.financialParams.discountRate, t), 0);
+        
+        let irr = -1.0, high = 1.0, low = 0.0, guess;
+        for (let i=0; i < 100; i++) {
+             guess = (low + high) / 2;
+             if (isNaN(guess)) { irr = -1; break; }
+             let npv_guess = cashFlows.reduce((acc, val, t) => acc + val / Math.pow(1 + guess, t), 0);
+             if (npv_guess > 0) low = guess; else high = guess;
+             if(Math.abs(npv_guess) < 1e-5) break;
+        }
+        irr = (Math.abs(high-low) < 1e-4) ? guess : -1;
+
+        let cumulativeCashFlow = 0, paybackPeriod = -1;
+        for (let t = 0; t < cashFlows.length; t++) {
+            const lastCumulative = cumulativeCashFlow;
+            cumulativeCashFlow += cashFlows[t];
+            if (cumulativeCashFlow > 0 && lastCumulative <= 0) {
+                paybackPeriod = (t - 1) + (-lastCumulative / cashFlows[t]);
+                break;
+            }
+        }
+
+        const firstYear = annualStatements[0] || {};
+        const totalFixedCostFirstYear = (firstYear.fixedOpex || 0) + (firstYear.depreciation || 0);
+        const revenueFirstYear = firstYear.revenue || 0;
+        const totalVariableCostFirstYear = (firstYear.cogs || 0) + (firstYear.variableOpex || 0);
+        const contributionMarginRatio = revenueFirstYear > 0 ? (revenueFirstYear - totalVariableCostFirstYear) / revenueFirstYear : 0;
+        const breakEvenRevenue = contributionMarginRatio > 0 ? totalFixedCostFirstYear / contributionMarginRatio : 0;
+        
+        return { npv, irr, paybackPeriod, breakEvenRevenue, totalInvestment };
+    }
+    
+    // --- Number Formatting & Totals Calculation ---
+    const numberInputIds = [
+        'investmentBuilding',
+        'investmentRenovation', 'investmentPOS', 'investmentSecurity', 'investmentInitialInventory', 'investmentFees', 'investmentRentalDeposit', 'investmentWorkingCapital', 'investmentPrelaunchMarketing',
+        'dailyCustomers', 'basketSize', 'pharmacistSalary', 'assistantSalary', 'opexRent', 'opexOvertime', 'opexUtilities', 
+        'feeAccountingMonthly', 'feeAuditYearly', 'feeLicenseDrugYearly', 'feeLicenseNarcoticYearly', 'feeGPPBiYearly', 'feeSignTaxYearly',
+        'opexMarketingOnline', 'opexMarketingOffline', 'opexMarketingPromo'
+    ];
+
+    function formatInputAsNumber(e) {
+        const input = e.target;
+        if (!numberInputIds.includes(input.id)) return;
+        let value = input.value.replace(/,/g, '');
+        if (value === '' || isNaN(value)) return;
+        input.value = parseFloat(value).toLocaleString('en-US');
+    }
+    
+    function formatAllNumberInputs() {
+        numberInputIds.forEach(id => {
+            const input = $(`#${id}`);
+            if (input && input.value) {
+                let value = input.value.replace(/,/g, '');
+                if (!isNaN(value) && value !== '') {
+                    input.value = parseFloat(value).toLocaleString('en-US');
+                }
+            }
+        });
+    }
+
+    function updateTotalSalary() {
+        const pCount = parseInt(cleanValue('pharmacistCount')) || 0;
+        const pSalary = parseFloat(cleanValue('pharmacistSalary')) || 0;
+        const aCount = parseInt(cleanValue('assistantCount')) || 0;
+        const aSalary = parseFloat(cleanValue('assistantSalary')) || 0;
+        const total = (pCount * pSalary) + (aCount * aSalary);
+        $('#totalSalary').value = total;
+    }
+
+    function calculateTotalFeesMonthly() {
+        let totalMonthlyFee = 0;
+        $('.detail-fee').forEach(el => {
+            const value = parseFloat(cleanValue(el.id)) || 0;
+            const months = parseInt(el.dataset.months) || 1;
+            totalMonthlyFee += value / months;
+        });
+        $('#totalFeesMonthly').value = totalMonthlyFee;
+    }
+
+    function updateTotalDisplays() {
+        updateTotalSalary();
+        calculateTotalFeesMonthly();
+        const totalInvestment = Array.from($('.detail-investment')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        $('#totalInvestmentDisplay').value = totalInvestment.toLocaleString('en-US');
+
+        const totalFixedOpex = Array.from($('.detail-fixed-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        $('#totalFixedOpexDisplay').value = totalFixedOpex.toLocaleString('en-US');
+
+        const totalVariableOpexRate = Array.from($('.detail-variable-opex')).reduce((sum, el) => sum + (parseFloat(cleanValue(el.id)) || 0), 0);
+        $('#totalVariableOpexRateDisplay').value = totalVariableOpexRate.toFixed(1);
+    }
+
+    function toggleLocationFields() {
+        const isOwn = $('#locationTypeOwn').checked;
+        const rentField = $('#rentField');
+        const rentalDepositField = $('#rentalDepositField');
+        const buildingInvestmentField = $('#buildingInvestmentField');
+
+        buildingInvestmentField.style.display = isOwn ? 'block' : 'none';
+        rentField.style.display = isOwn ? 'none' : 'block';
+        rentalDepositField.style.display = isOwn ? 'none' : 'block';
+
+        if (isOwn) {
+            $('#opexRent').value = 0;
+            $('#investmentRentalDeposit').value = 0;
+            if (cleanValue('investmentBuilding') === '0') {
+                 $('#investmentBuilding').value = '3000000';
+            }
+        } else {
+            $('#investmentBuilding').value = 0;
+            if (cleanValue('opexRent') === '0') {
+                $('#opexRent').value = '10000';
+            }
+        }
+        
+        // When toggling, we must re-format and re-calculate everything
+        formatAllNumberInputs();
+        main();
+    }
+
+    // --- CSV EXPORT ---
+    function exportToCSV() {
+        const assumptions = getAssumptions();
+        const monthlyProjections = runProjection(assumptions);
+        const annualStatements = generateStatements(monthlyProjections, assumptions.projectionYears);
+
+        let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // BOM for Thai in Excel
+        const headers = ['รายการ', ...annualStatements.map(s => `ปี ${s.year}`)].join(',');
+        csvContent += headers + '\r\n';
+
+        csvContent += '"งบกำไรขาดทุน"\r\n';
+        const incomeKeys = { revenue: 'รายได้', cogs: 'ต้นทุนขาย', grossProfit: 'กำไรขั้นต้น', totalOpex: 'ค่าใช้จ่ายดำเนินงาน', depreciation: 'ค่าเสื่อมราคา', ebit: 'กำไรก่อนดอกเบี้ยและภาษี', tax: 'ภาษี', netIncome: 'กำไรสุทธิ' };
+        for (const [key, label] of Object.entries(incomeKeys)) {
+            const row = [`"${label}"`, ...annualStatements.map(s => s[key])].join(',');
+            csvContent += row + '\r\n';
+        }
+
+        csvContent += '\r\n'; // Blank line
+
+        csvContent += '"งบกระแสเงินสด"\r\n';
+        const cashFlowKeys = { netIncome: 'กำไรสุทธิ', depreciation: 'บวกกลับ: ค่าเสื่อมราคา', freeCashFlow: 'กระแสเงินสดอิสระ' };
+        for (const [key, label] of Object.entries(cashFlowKeys)) {
+             let row = (key === 'freeCashFlow')
+                ? [`"${label}"`, ...annualStatements.map(s => s.netIncome + s.depreciation)].join(',')
+                : [`"${label}"`, ...annualStatements.map(s => s[key])].join(',');
+            csvContent += row + '\r\n';
+        }
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "pharmacy_financial_forecast.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // --- MODULE 6: UI RENDERING ---
+    function displayMetrics(metrics) {
+        const { npv, irr, paybackPeriod, breakEvenRevenue, totalInvestment } = metrics;
+        const content = `
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">สรุปผลการวิเคราะห์</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-gray-100 rounded-lg"><p class="text-sm text-gray-600">เงินลงทุนเริ่มต้นทั้งหมด</p><p class="text-2xl font-semibold text-gray-900">${formatCurrency(totalInvestment)}</p></div>
+                <div class="p-4 bg-gray-100 rounded-lg"><p class="text-sm text-gray-600">จุดคุ้มทุน (รายได้ต่อปี)</p><p class="text-2xl font-semibold text-gray-900">${formatCurrency(breakEvenRevenue)}</p></div>
+                <div class="p-4 rounded-lg ${npv > 0 ? 'bg-green-100' : 'bg-red-100'}"><p class="text-sm ${npv > 0 ? 'text-green-800' : 'text-red-800'}">มูลค่าปัจจุบันสุทธิ (NPV)</p><p class="text-2xl font-semibold ${npv > 0 ? 'text-green-900' : 'text-red-900'}">${formatCurrency(npv)}</p></div>
+                <div class="p-4 rounded-lg ${irr > getAssumptions().financialParams.discountRate ? 'bg-green-100' : 'bg-red-100'}"><p class="text-sm ${irr > getAssumptions().financialParams.discountRate ? 'text-green-800' : 'text-red-800'}">อัตราผลตอบแทนภายใน (IRR)</p><p class="text-2xl font-semibold ${irr > getAssumptions().financialParams.discountRate ? 'text-green-900' : 'text-red-900'}">${(irr >= 0 && isFinite(irr)) ? (irr * 100).toFixed(2) + '%' : 'N/A'}</p></div>
+                <div class="p-4 bg-gray-100 rounded-lg"><p class="text-sm text-gray-600">ระยะเวลาคืนทุน (Payback Period)</p><p class="text-2xl font-semibold text-gray-900">${(paybackPeriod >= 0) ? paybackPeriod.toFixed(2) + ' ปี' : 'ไม่คืนทุน'}</p></div>
+            </div>
+            <div class="mt-6"><button id="exportCsvBtn" class="btn btn-primary w-full mt-6 text-lg py-3">Export ข้อมูลเป็น CSV</button></div>
+        `;
+        $('#tab-content-metrics').innerHTML = content;
+        $('#exportCsvBtn').addEventListener('click', exportToCSV);
+    }
+    
+    function renderFinancialsChart(annualStatements) {
+        if(!annualStatements || annualStatements.length === 0) return;
+        const ctx = $('#financialsChart').getContext('2d');
+        if (window.financialsChart instanceof Chart) {
+            window.financialsChart.destroy();
+        }
+        window.financialsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: annualStatements.map(s => `ปี ${s.year}`),
+                datasets: [
+                    {
+                        label: 'รายได้',
+                        data: annualStatements.map(s => s.revenue),
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'กำไรขั้นต้น',
+                        data: annualStatements.map(s => s.grossProfit),
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'กำไรสุทธิ',
+                        data: annualStatements.map(s => s.netIncome),
+                        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'สรุปผลประกอบการรายปี' }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: value => formatCurrency(value) }
+                    }
+                }
+            }
+        });
+    }
+
+    function displayStatements(annualStatements) {
+        if(!annualStatements || annualStatements.length === 0) {
+            $('#tab-content-statements').innerHTML = '<p>กำลังคำนวณข้อมูล...</p>';
+            return;
+        }
+
+        let incomeStatementHtml = `<h3 class="text-xl font-bold mb-2">งบกำไรขาดทุน (รายปี)</h3><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead><tr class="bg-gray-100"><th class="p-2">รายการ</th>${annualStatements.map(s => `<th class="p-2 text-right">ปี ${s.year}</th>`).join('')}</tr></thead><tbody>`;
+        const incomeKeys = { revenue: 'รายได้', cogs: 'ต้นทุนขาย', grossProfit: 'กำไรขั้นต้น', totalOpex: 'ค่าใช้จ่ายดำเนินงาน', depreciation: 'ค่าเสื่อมราคา', ebit: 'กำไรก่อนดอกเบี้ยและภาษี', tax: 'ภาษี', netIncome: 'กำไรสุทธิ' };
+        for (const [key, label] of Object.entries(incomeKeys)) {
+            incomeStatementHtml += `<tr class="border-b"><td class="p-2 font-medium">${label}</td>${annualStatements.map(s => `<td class="p-2 text-right">${formatCurrency(s[key])}</td>`).join('')}</tr>`;
+        }
+        incomeStatementHtml += `</tbody></table></div>`;
+
+        let cashFlowStatementHtml = `<h3 class="text-xl font-bold mt-8 mb-2">งบกระแสเงินสด (รายปี)</h3><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead><tr class="bg-gray-100"><th class="p-2">รายการ</th>${annualStatements.map(s => `<th class="p-2 text-right">ปี ${s.year}</th>`).join('')}</tr></thead><tbody>`;
+        const cashFlowKeys = { netIncome: 'กำไรสุทธิ', depreciation: 'บวกกลับ: ค่าเสื่อมราคา', freeCashFlow: 'กระแสเงินสดอิสระ' };
+        for (const [key, label] of Object.entries(cashFlowKeys)) {
+             let row = (key === 'freeCashFlow')
+                 ? `<tr class="border-b font-bold"><td class="p-2">${label}</td>${annualStatements.map(s => `<td class="p-2 text-right">${formatCurrency(s.netIncome + s.depreciation)}</td>`).join('')}</tr>`
+                 : `<tr class="border-b"><td class="p-2">${label}</td>${annualStatements.map(s => `<td class="p-2 text-right">${formatCurrency(s[key])}</td>`).join('')}</tr>`;
+            cashFlowStatementHtml += row;
+        }
+        cashFlowStatementHtml += `</tbody></table></div><div class="mt-8"><canvas id="financialsChart"></canvas></div>`;
+        $('#tab-content-statements').innerHTML = incomeStatementHtml + cashFlowStatementHtml;
+        renderFinancialsChart(annualStatements);
+    }
+
+    function displayComparison() {
+        // 1. Get current base customers from the data attribute
+        const baseCustomers = parseFloat($('#dailyCustomers').dataset.baseValue) || 100;
+
+        // 2. Get other assumptions, but we will override customers for each case
+        const baseAssumptions = getAssumptions(baseCustomers);
+        const bestAssumptions = getAssumptions(baseCustomers * 1.3);
+        const worstAssumptions = getAssumptions(baseCustomers * 0.7);
+
+        const scenariosToCompare = [
+            { name: 'Worst Case (-30%)', assumptions: worstAssumptions },
+            { name: 'Base Case (Current)', assumptions: baseAssumptions },
+            { name: 'Best Case (+30%)', assumptions: bestAssumptions },
+        ];
+        
+        let results = [];
+        for (const scenario of scenariosToCompare) {
+            const monthly = runProjection(scenario.assumptions);
+            const annual = generateStatements(monthly, scenario.assumptions.projectionYears);
+            const metrics = calculateMetrics(annual, scenario.assumptions);
+            results.push({ name: scenario.name, metrics });
+        }
+
+        let comparisonHtml = `
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">เปรียบเทียบสถานการณ์</h2>
+            <p class="text-sm text-gray-500 mb-4">ตารางนี้เปรียบเทียบข้อมูลที่คุณกรอกในปัจจุบัน (Base Case) กับสถานการณ์ที่ลูกค้ามากขึ้น/น้อยลง 30%</p>
+            <div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="bg-gray-100"><tr><th class="p-2">สถานการณ์</th><th class="p-2 text-right">NPV</th><th class="p-2 text-right">IRR</th><th class="p-2 text-right">Payback (ปี)</th></tr></thead><tbody>
+            ${results.map(r => `<tr class="border-b"><td class="p-2 font-medium">${r.name}</td><td class="p-2 text-right">${formatCurrency(r.metrics.npv)}</td><td class="p-2 text-right">${(r.metrics.irr >= 0 && isFinite(r.metrics.irr)) ? (r.metrics.irr * 100).toFixed(2) + '%' : 'N/A'}</td><td class="p-2 text-right">${r.metrics.paybackPeriod >= 0 ? r.metrics.paybackPeriod.toFixed(2) : 'N/A'}</td></tr>`).join('')}
+            </tbody></table></div>
+            <div class="mt-8"><canvas id="comparisonChart"></canvas></div>`;
+        $('#tab-content-comparison').innerHTML = comparisonHtml;
+        
+        const ctx = $('#comparisonChart').getContext('2d');
+        if (window.comparisonChart instanceof Chart) window.comparisonChart.destroy();
+        window.comparisonChart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: results.map(r => r.name), datasets: [
+                { label: 'NPV (บาท)', data: results.map(r => r.metrics.npv), backgroundColor: results.map(r => r.metrics.npv > 0 ? 'rgba(75, 192, 192, 0.6)' : 'rgba(255, 99, 132, 0.6)'), borderColor: results.map(r => r.metrics.npv > 0 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'), borderWidth: 1 },
+                { label: 'IRR (%)', data: results.map(r => (r.metrics.irr >= 0 && isFinite(r.metrics.irr)) ? r.metrics.irr * 100 : 0), backgroundColor: 'rgba(255, 206, 86, 0.6)', borderColor: 'rgba(255, 206, 86, 1)', borderWidth: 1, yAxisID: 'y1' }
+            ]},
+            options: { scales: {
+                y: { beginAtZero: true, position: 'left', ticks: { callback: value => formatCurrency(value) }, title: { display: true, text: 'NPV (บาท)' } },
+                y1: { beginAtZero: true, position: 'right', ticks: { callback: value => value.toFixed(1) + '%' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'IRR (%)' } }
+            }, plugins: { legend: { display: true }, title: { display: true, text: 'เปรียบเทียบ NPV & IRR ของแต่ละสถานการณ์' } } }
+        });
+    }
+
+    function switchTab(tabName) {
+        $('.tab-content').forEach(el => el.classList.add('hidden'));
+        $('.tab-button').forEach(el => el.classList.remove('active'));
+        $(`#tab-content-${tabName}`).classList.remove('hidden');
+        $(`button[data-tab="${tabName}"]`).classList.add('active');
+        
+        if (tabName === 'statements') {
+            displayStatements(window.currentAnnualStatements);
+        } else if (tabName === 'comparison') {
+            displayComparison();
+        }
+    }
+
+    function main() {
+        updateTotalDisplays();
+        const assumptions = getAssumptions();
+        const monthlyProjections = runProjection(assumptions);
+        const annualStatements = generateStatements(monthlyProjections, assumptions.projectionYears);
+        const metrics = calculateMetrics(annualStatements, assumptions);
+        
+        window.currentAnnualStatements = annualStatements;
+
+        displayMetrics(metrics);
+        
+        // Render the active tab content if it's visible
+        const activeTab = $('.tab-button.active').dataset.tab;
+        if (activeTab === 'statements') {
+            displayStatements(window.currentAnnualStatements);
+        } else if (activeTab === 'comparison') {
+            displayComparison();
+        }
+    }
+
+    // Event Listeners
+    $('input[name="locationType"]').forEach(radio => radio.addEventListener('change', toggleLocationFields));
+
+    $('#tabs').addEventListener('click', (e) => { if(e.target.matches('.tab-button')) switchTab(e.target.dataset.tab); });
+    $('.form-input').forEach(input => {
+        input.addEventListener('input', main); 
+        input.addEventListener('change', (e) => { 
+            // When the user manually changes the customer count, it becomes the new base
+            if (e.target.id === 'dailyCustomers') {
+                const baseValue = parseFloat(cleanValue('dailyCustomers')) || 0;
+                e.target.dataset.baseValue = baseValue;
+            }
+            if (numberInputIds.includes(e.target.id) || e.target.classList.contains('detail-salary-component')) {
+                formatInputAsNumber(e);
+            }
+        });
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        // Set initial base value for customers
+        const dailyCustomersInput = $('#dailyCustomers');
+        dailyCustomersInput.dataset.baseValue = parseFloat(cleanValue('dailyCustomers')) || 100;
+        
+        toggleLocationFields(); // Sets initial visibility and runs main()
+    });
+
+</script>
+
+</body>
+</html>
+
+
