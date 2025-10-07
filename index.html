@@ -642,7 +642,8 @@
                 return acc;
             }, {});
             
-            // Calculate proper annual free cash flow for consistency with CSV export
+            // Calculate proper annual free cash flow to be consistent with CSV export and common practice
+            // Free Cash Flow = Net Income + Depreciation (simplified approach)
             annualData.freeCashFlow = annualData.netIncome + annualData.depreciation;
             
             annualStatements.push({ year, ...annualData });
