@@ -1075,7 +1075,7 @@
     }
 
     // Event Listeners
-    $('input[name="locationType"]').forEach(radio => radio.addEventListener('change', toggleLocationFields));
+    $$('input[name="locationType"]').forEach(radio => radio.addEventListener('change', toggleLocationFields));
 
     $('#tabs').addEventListener('click', (e) => { if(e.target.matches('.tab-button')) switchTab(e.target.dataset.tab); });
     $$('.form-input').forEach(input => {
