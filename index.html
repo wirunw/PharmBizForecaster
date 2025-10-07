@@ -387,6 +387,19 @@
                                             <label for="opexRent" class="form-label text-xs">ค่าเช่าร้าน</label>
                                             <input type="text" id="opexRent" class="form-input detail-fixed-opex" value="10000">
                                         </div>
+                                        <!-- Property Ownership Costs - Visible only when 'own' is selected -->
+                                        <div id="propertyTaxField" class="hidden">
+                                            <label for="opexPropertyTax" class="form-label text-xs">ค่าภาษีที่ดิน/ทรัพย์สิน</label>
+                                            <input type="text" id="opexPropertyTax" class="form-input detail-fixed-opex" value="2000">
+                                        </div>
+                                        <div id="propertyInsuranceField" class="hidden">
+                                            <label for="opexPropertyInsurance" class="form-label text-xs">ค่าประกันทรัพย์สิน</label>
+                                            <input type="text" id="opexPropertyInsurance" class="form-input detail-fixed-opex" value="1000">
+                                        </div>
+                                        <div id="propertyMaintenanceField" class="hidden">
+                                            <label for="opexPropertyMaintenance" class="form-label text-xs">ค่าซ่อมแซม/บำรุงรักษา</label>
+                                            <input type="text" id="opexPropertyMaintenance" class="form-input detail-fixed-opex" value="1500">
+                                        </div>
                                         <div>
                                             <label for="opexOvertime" class="form-label text-xs">ค่าล่วงเวลา (OT)</label>
                                             <input type="text" id="opexOvertime" class="form-input detail-fixed-opex" value="0">
@@ -754,10 +767,16 @@
         const rentField = $('#rentField');
         const rentalDepositField = $('#rentalDepositField');
         const buildingInvestmentField = $('#buildingInvestmentField');
+        const propertyTaxField = $('#propertyTaxField');
+        const propertyInsuranceField = $('#propertyInsuranceField');
+        const propertyMaintenanceField = $('#propertyMaintenanceField');
 
         buildingInvestmentField.style.display = isOwn ? 'block' : 'none';
         rentField.style.display = isOwn ? 'none' : 'block';
         rentalDepositField.style.display = isOwn ? 'none' : 'block';
+        propertyTaxField.style.display = isOwn ? 'block' : 'none';
+        propertyInsuranceField.style.display = isOwn ? 'block' : 'none';
+        propertyMaintenanceField.style.display = isOwn ? 'block' : 'none';
 
         if (isOwn) {
             $('#opexRent').value = 0;
@@ -767,6 +786,9 @@
             }
         } else {
             $('#investmentBuilding').value = 0;
+            $('#opexPropertyTax').value = 0;
+            $('#opexPropertyInsurance').value = 0;
+            $('#opexPropertyMaintenance').value = 0;
             if (cleanValue('opexRent') === '0') {
                 $('#opexRent').value = '10000';
             }
